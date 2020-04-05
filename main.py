@@ -6,6 +6,8 @@ app = FastAPI()
 # to see what funny will come
 app.counter = 0
 app.next_patient_id = 0
+app.patients = dict()
+
 
 class Patient(BaseModel):
     name: str
@@ -62,6 +64,14 @@ def method_get(req: Request):
 
 @app.post("/patient", response_model=PatientResp)
 def post_patient_with_id(req: Patient):
-    app.next_patient_id += 1
     patient_id = app.next_patient_id
-    return PatientResp(id=patient_id, patient=req)
+    app.next_patient_id += 1
+    app.patients[patient_id] = req
+    return PatientResp(id=patient_id, patient=req.dict())
+
+
+@app.get("/patient/{patient_id}", response_model=Patient)
+def get_patient(patient_id: int):
+    if not patient_id in app.patients:
+        raise HTTPException(status_code=204, detail="Patient not found")
+    return app.patients[patient_id]
