@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from main import app
-from main import HelloResp
+from main import HelloResp, RespMethod
 import pytest
 from json import dumps
 
@@ -32,4 +32,16 @@ def test_receive_something():
     assert response.json() == {"received": {'first_key': 'some_value'}, "constant_data": "python jest super"}
 
 
-
+def test_method():
+    response = client.get("/method")
+    assert response.status_code == 200
+    assert dumps(response.json()) == dumps(RespMethod(method="GET").__dict__)
+    response = client.put("/method")
+    assert response.status_code == 200
+    assert dumps(response.json()) == dumps(RespMethod(method="PUT").__dict__)
+    response = client.post("/method")
+    assert response.status_code == 200
+    assert dumps(response.json()) == dumps(RespMethod(method="POST").__dict__)
+    response = client.delete("/method")
+    assert response.status_code == 200
+    assert dumps(response.json()) == dumps(RespMethod(method="DELETE").__dict__)

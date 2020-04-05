@@ -1,10 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from pydantic import BaseModel
 
 app = FastAPI()
 # to see what funny will come
 app.counter = 0
+
+class RespMethod(BaseModel):
+    method: str
 
 
 class HelloResp(BaseModel):
@@ -39,3 +42,11 @@ def receive_something(rq: GiveMeSomethingRq):
 @app.get("/", response_model=HelloResp)
 def root():
     return HelloResp(message="Hello World during the coronavirus pandemic!")
+
+
+@app.get("/method", response_model=RespMethod)
+@app.post("/method", response_model=RespMethod)
+@app.put("/method", response_model=RespMethod)
+@app.delete("/method", response_model=RespMethod)
+def method_get(req: Request):
+    return RespMethod(method=req.method)
