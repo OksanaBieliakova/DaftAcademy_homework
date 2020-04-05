@@ -62,6 +62,6 @@ def method_get(req: Request):
 
 @app.post("/patient", response_model=PatientResp)
 def post_patient_with_id(req: Patient):
-    patient_id = app.next_patient_id
     app.next_patient_id += 1
+    patient_id = app.next_patient_id
     return PatientResp(id=patient_id, patient=req)
